@@ -125,12 +125,24 @@ class SimpleAICorporationBot:
     
     async def start(self):
         """Start the Discord bot"""
+        logger.info(f"🔍 DEBUG: Attempting to login with token: {self.token[:10]}...{self.token[-10:]}")
+        logger.info(f"🔍 DEBUG: Token length: {len(self.token)}")
+        logger.info(f"🔍 DEBUG: Token parts: {len(self.token.split('.'))}")
+        
         try:
             await self.client.start(self.token)
-        except discord.LoginFailure:
-            logger.error("❌ Invalid Discord token")
+        except discord.LoginFailure as e:
+            logger.error(f"❌ Invalid Discord token - Discord API response: {e}")
+            logger.error(f"🔍 DEBUG: Full token being used: {repr(self.token)}")
+        except discord.HTTPException as e:
+            logger.error(f"❌ Discord HTTP error: {e}")
+            logger.error(f"🔍 DEBUG: Status code: {e.status}")
+            logger.error(f"🔍 DEBUG: Response: {e.response}")
         except Exception as e:
             logger.error(f"❌ Bot startup error: {e}")
+            logger.error(f"🔍 DEBUG: Exception type: {type(e)}")
+            import traceback
+            logger.error(f"🔍 DEBUG: Full traceback:\n{traceback.format_exc()}")
 
 def start_simple_discord_bot():
     """Start the simple Discord bot"""

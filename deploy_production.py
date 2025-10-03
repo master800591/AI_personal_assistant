@@ -11,6 +11,7 @@ import subprocess
 import logging
 from pathlib import Path
 from datetime import datetime
+from dotenv import load_dotenv
 
 # Add src to path for imports
 sys.path.append(str(Path(__file__).parent / "src"))
@@ -96,11 +97,17 @@ def deploy_discord_bot(logger):
     try:
         # Check if Discord token is available
         discord_token = os.getenv('DISCORD_BOT_TOKEN')
+        
+        # Debug token loading
+        logger.info(f"🔍 DEBUG: Discord token from env: {repr(discord_token)}")
+        logger.info(f"🔍 DEBUG: Token length: {len(discord_token) if discord_token else 'None'}")
+        
         if not discord_token:
             logger.warning("⚠️ DISCORD_BOT_TOKEN not set - skipping Discord bot")
             return False
         
         logger.info("🤖 Deploying Discord Bot...")
+        logger.info(f"🔍 DEBUG: Testing Discord token: {discord_token[:10]}...{discord_token[-10:]}")
         
         # Try to import and start simple Discord bot
         from ai_assistant.discord.simple_discord_bot import start_simple_discord_bot
@@ -240,6 +247,9 @@ def start_monitoring_systems(logger):
 
 def main():
     """Main production deployment orchestrator"""
+    # Load environment variables from .env file
+    load_dotenv()
+    
     print("🚀 AI CORPORATION - PRODUCTION DEPLOYMENT")
     print("=" * 50)
     
