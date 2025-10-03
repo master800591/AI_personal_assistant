@@ -1,0 +1,30 @@
+# AI Corporation Production Requirements
+
+# Core Python packages
+requests>=2.31.0
+asyncio-mqtt>=0.16.0
+psutil>=5.9.0
+
+# Discord integration
+discord.py>=2.3.0
+
+# Data handling and utilities
+python-dateutil>=2.8.2
+aiofiles>=23.0.0
+
+# Networking and P2P
+websockets>=11.0.0
+aiohttp>=3.8.0
+
+# Security and encryption
+cryptography>=41.0.0
+pycryptodome>=3.18.0
+
+# Development and testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+
+# Optional AI/ML packages (if needed)
+# ollama>=0.1.0  # If ollama Python package becomes available
+# transformers>=4.30.0
+# torch>=2.0.0
