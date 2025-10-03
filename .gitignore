@@ -1,3 +1,17 @@
+# Security and Sensitive Files
+*.key
+*.env
+.env*
+secrets/
+tokens/
+replications/
+
+# Virtual Environment - DO NOT COMMIT
+.venv/
+venv/
+ENV/
+env/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -5,6 +19,7 @@ __pycache__/
 
 # C extensions
 *.so
+.pem
 
 # Distribution / packaging
 .Python
