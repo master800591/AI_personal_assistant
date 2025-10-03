@@ -67,16 +67,26 @@ def check_environment():
     return all_good
 
 def deploy_self_evolution_system(logger):
-    """Deploy the self-evolution system"""
+    """Deploy the self-evolution system with continuous improvement"""
     try:
-        from ai_assistant.core.self_evolution import create_evolution_system
-        
         github_token = os.getenv('GITHUB_TOKEN')
         if not github_token:
             logger.error("❌ GITHUB_TOKEN required for self-evolution system")
             return False
         
         logger.info("🧠 Deploying Self-Evolution System...")
+        
+        # Start the continuous evolution engine for real autonomous improvement
+        try:
+            from continuous_evolution_engine import start_continuous_evolution
+            evolution_engine = start_continuous_evolution()
+            logger.info("🤖 Continuous Evolution Engine started - AI will autonomously improve code!")
+            logger.info("🔄 Evolution cycles will run every 5-15 minutes with real improvements")
+        except ImportError:
+            logger.warning("⚠️ Continuous evolution engine not found - using basic evolution")
+        
+        # Also start the original evolution cycle for GitHub workflow setup
+        from ai_assistant.core.self_evolution import create_evolution_system
         system = create_evolution_system("master800591-founder", github_token)
         
         # Start evolution cycle
