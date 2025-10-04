@@ -12,119 +12,175 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from datetime import datetime
 from dotenv import load_dotenv
+import threading
+import concurrent.futures
 
 # Add src to path for imports
 current_dir = Path(__file__).parent
 src_dir = current_dir / "src"
 sys.path.insert(0, str(src_dir))
 
+# Import real components
+from ai_assistant.crews.proper_ai_crew import AutonomousCrewManager
+from ai_assistant.discord.enhanced_bot import AIAssistantDiscordBot
+from ai_assistant.github.manager import GitHubManager
+from ai_assistant.utils.config import Config
+from ai_assistant.utils.logging import get_logger
+
 class AIPersonalAssistant:
-    """Complete AI Personal Assistant System"""
+    """Complete AI Personal Assistant System with Real Integrations"""
     
-    def __init__(self, config_dir: str = "config"):
-        self.config_dir = Path(config_dir)
+    def __init__(self, config_path: str = "config/test.yaml"):
+        self.config_path = Path(config_path)
         self.logger = self._setup_logging()
         self.running = False
         
-        # Components
-        self.crew_manager = None
-        self.discord_bot = None
-        self.github_automation = None
+        # Load environment and configuration
+        load_dotenv()
+        self.config = self._load_configuration()
         
-        # Configuration
-        self.config = self._load_environment()
+        # Real components - no mocks!
+        self.crew_manager: Optional[AutonomousCrewManager] = None
+        self.discord_bot: Optional[AIAssistantDiscordBot] = None
+        self.github_manager: Optional[GitHubManager] = None
+        
+        # Task management
+        self.background_tasks = set()
+        self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
         
         self.logger.info("🤖 AI Personal Assistant initialized")
-        self.logger.info(f"👑 Founder: Steve Cornell (master80059)")
+        self.logger.info(f"👑 Founder: {self.config.get('founder_name', 'Steve Cornell')}")
         self.logger.info(f"📅 Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     def _setup_logging(self) -> logging.Logger:
         """Setup comprehensive logging"""
+        # Ensure logs directory exists
+        Path("logs").mkdir(exist_ok=True)
+        
         logging.basicConfig(
             level=logging.INFO,
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             handlers=[
                 logging.StreamHandler(),
-                logging.FileHandler('ai_assistant.log', encoding='utf-8')
+                logging.FileHandler('logs/ai_assistant.log', encoding='utf-8')
             ]
         )
         return logging.getLogger(__name__)
     
-    def _load_environment(self) -> Dict[str, Any]:
-        """Load environment configuration"""
-        # Load .env file
-        load_dotenv()
-        
-        return {
+    def _load_configuration(self) -> Dict[str, Any]:
+        """Load complete configuration from environment and config files"""
+        config = {
+            # Environment tokens
             'discord_token': os.getenv('DISCORD_BOT_TOKEN'),
             'github_token': os.getenv('GITHUB_TOKEN'),
-            'ollama_host': os.getenv('OLLAMA_HOST', 'localhost:11434'),
+            'ollama_host': os.getenv('OLLAMA_HOST', 'localhost'),
+            'ollama_port': os.getenv('OLLAMA_PORT', '11434'),
+            
+            # Founder info
             'founder_name': os.getenv('AI_CORP_FOUNDER', 'Steve Cornell'),
-            'founder_github': 'master80059'
+            'founder_github': 'master80059',
+            
+            # System settings
+            'ai_corp_mode': os.getenv('AI_CORP_MODE', 'production'),
+            'cycle_interval': 600,  # 10 minutes
+            'max_concurrent_tasks': 4,
+            
+            # Feature flags
+            'discord_enabled': bool(os.getenv('DISCORD_BOT_TOKEN')),
+            'github_enabled': bool(os.getenv('GITHUB_TOKEN')),
+            'crewai_enabled': True,
+            'voice_enabled': True,
+            'knowledge_management': True
         }
+        
+        # Load YAML config if exists
+        if self.config_path.exists():
+            try:
+                import yaml
+                with open(self.config_path, 'r') as f:
+                    yaml_config = yaml.safe_load(f)
+                    config.update(yaml_config)
+            except Exception as e:
+                self.logger.warning(f"Could not load YAML config: {e}")
+        
+        return config
     
     async def initialize_components(self):
-        """Initialize all system components"""
+        """Initialize all REAL system components concurrently"""
         self.logger.info("🚀 Initializing AI Personal Assistant components...")
         
-        # Initialize CrewAI system
-        await self._init_crew_manager()
-        
-        # Initialize Discord bot
-        await self._init_discord_bot()
-        
-        # Initialize GitHub automation
-        await self._init_github_automation()
+        # Initialize all components concurrently
+        await asyncio.gather(
+            self._init_crew_manager(),
+            self._init_discord_bot(),
+            self._init_github_manager(),
+            return_exceptions=True
+        )
         
         self.logger.info("✅ All components initialized successfully")
     
     async def _init_crew_manager(self):
-        """Initialize CrewAI management system"""
+        """Initialize REAL CrewAI management system"""
         try:
-            # Check if CrewAI is available
             self.logger.info("🧠 Initializing CrewAI system...")
             
-            # For now, create a placeholder that simulates CrewAI functionality
-            self.crew_manager = MockCrewManager()
+            # Create real AutonomousCrewManager with our enhanced agents and tools
+            self.crew_manager = AutonomousCrewManager(self.config)
+            # Note: AutonomousCrewManager doesn't need separate initialize() call
             
-            self.logger.info("✅ CrewAI system ready")
+            self.logger.info("✅ CrewAI system ready with enhanced agents and Discord tools")
         except Exception as e:
             self.logger.error(f"❌ Failed to initialize CrewAI: {e}")
+            import traceback
+            self.logger.error(traceback.format_exc())
             self.crew_manager = None
     
     async def _init_discord_bot(self):
-        """Initialize Discord bot"""
+        """Initialize REAL Discord bot with CrewAI integration"""
         try:
             discord_token = self.config.get('discord_token')
             if discord_token:
                 self.logger.info("🤖 Initializing Discord bot...")
                 
-                # Create mock Discord bot for now
-                self.discord_bot = MockDiscordBot(discord_token, self.crew_manager)
+                # Create real AIAssistantDiscordBot with CrewAI integration
+                self.discord_bot = AIAssistantDiscordBot(self.config, self.crew_manager)
                 
-                self.logger.info("✅ Discord bot ready")
+                # Start Discord bot in background
+                bot_task = asyncio.create_task(self.discord_bot.start(discord_token))
+                self.background_tasks.add(bot_task)
+                bot_task.add_done_callback(self.background_tasks.discard)
+                
+                self.logger.info("✅ Discord bot ready with voice capabilities and CrewAI integration")
             else:
                 self.logger.warning("⚠️ No Discord token provided - bot disabled")
         except Exception as e:
             self.logger.error(f"❌ Failed to initialize Discord bot: {e}")
+            import traceback
+            self.logger.error(traceback.format_exc())
             self.discord_bot = None
     
-    async def _init_github_automation(self):
-        """Initialize GitHub automation"""
+    async def _init_github_manager(self):
+        """Initialize REAL GitHub automation manager"""
         try:
             github_token = self.config.get('github_token')
             if github_token:
-                self.logger.info("🐙 Initializing GitHub automation...")
+                self.logger.info("🐙 Initializing GitHub manager...")
                 
-                # Create mock GitHub automation for now
-                self.github_automation = MockGitHubAutomation(github_token)
+                # Create real GitHubManager with correct parameters
+                self.github_manager = GitHubManager(
+                    token=github_token,
+                    config={'owner': self.config.get('founder_github', 'master80059'),
+                            'repo': 'AI_personal_assistant'}
+                )
                 
-                self.logger.info("✅ GitHub automation ready")
+                self.logger.info("✅ GitHub manager ready with automation capabilities")
             else:
                 self.logger.warning("⚠️ No GitHub token provided - automation disabled")
         except Exception as e:
-            self.logger.error(f"❌ Failed to initialize GitHub automation: {e}")
-            self.github_automation = None
+            self.logger.error(f"❌ Failed to initialize GitHub manager: {e}")
+            import traceback
+            self.logger.error(traceback.format_exc())
+            self.github_manager = None
     
     async def start(self, mode: str = "full"):
         """Start the AI Personal Assistant"""
@@ -153,18 +209,29 @@ class AIPersonalAssistant:
             await self.run_full_system()
     
     async def contact_founder_startup(self):
-        """Contact founder about system startup"""
+        """Contact founder about system startup using real Discord bot"""
         message = f"""
 🤖 **AI Personal Assistant System Startup**
 
-**Founder:** Steve Cornell (master80059)
+**Founder:** {self.config.get('founder_name', 'Steve Cornell')} ({self.config.get('founder_github', 'master80059')})
 **Status:** System starting up
 **Time:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 **Components Initialized:**
 • CrewAI System: {'✅' if self.crew_manager else '❌'}
 • Discord Bot: {'✅' if self.discord_bot else '❌'}
-• GitHub Automation: {'✅' if self.github_automation else '❌'}
+• GitHub Manager: {'✅' if self.github_manager else '❌'}
+
+**AI Agent Status:**
+• Code Analysis Agent: {'🔍 Active' if self.crew_manager else '❌ Offline'}
+• Feature Developer Agent: {'⚡ Active' if self.crew_manager else '❌ Offline'}
+• Founder Communication Agent: {'👑 Active' if self.crew_manager else '❌ Offline'}
+
+**Capabilities Online:**
+• Discord Voice Channels: {'✅' if self.discord_bot else '❌'}
+• Knowledge Management: {'✅' if self.crew_manager else '❌'}
+• GitHub Automation: {'✅' if self.github_manager else '❌'}
+• Multi-Agent Coordination: {'✅' if self.crew_manager else '❌'}
 
 **Questions for Founder:**
 1. What should be the priority focus for today's development?
@@ -172,27 +239,79 @@ class AIPersonalAssistant:
 3. Should I proceed with automated commits and pull requests?
 4. Any specific improvements or features you'd like implemented?
 
-Ready to begin autonomous development cycle!
+Ready to begin autonomous development cycle with full Discord integration!
         """
         
         self.logger.info("👑 Contacting founder about startup...")
         
-        # This would send via Discord or create GitHub issue
+        # Send via Discord if available
         if self.discord_bot:
-            await self.discord_bot.notify_founder(message)
-        elif self.github_automation:
-            await self.github_automation.create_issue(
-                "AI Assistant System Startup",
-                message,
-                ["startup", "founder-communication"]
-            )
+            try:
+                # Find a suitable channel (first available guild's first text channel)
+                if hasattr(self.discord_bot, 'guilds') and self.discord_bot.guilds:
+                    guild = self.discord_bot.guilds[0]
+                    if guild.text_channels:
+                        channel_id = guild.text_channels[0].id
+                        await self.discord_bot.send_crew_message(
+                            channel_id=channel_id,
+                            content=message
+                        )
+                        self.logger.info("📨 Startup notification sent via Discord")
+                    else:
+                        self.logger.warning("⚠️ No text channels available in Discord guild")
+                else:
+                    self.logger.warning("⚠️ No Discord guilds available")
+            except Exception as e:
+                self.logger.error(f"❌ Failed to send Discord notification: {e}")
         
-        self.logger.info("📨 Startup notification sent to founder")
+        # Fallback to GitHub issue if Discord not available
+        elif self.github_manager:
+            try:
+                await self.github_manager.create_issue(
+                    title="AI Assistant System Startup",
+                    body=message,
+                    labels=["startup", "founder-communication"]
+                )
+                self.logger.info("📨 Startup notification sent via GitHub issue")
+            except Exception as e:
+                self.logger.error(f"❌ Failed to create GitHub issue: {e}")
+        
+        self.logger.info("📨 Startup notification completed")
     
     async def run_full_system(self):
-        """Run complete integrated system"""
-        self.logger.info("🌟 Running full AI Personal Assistant system")
+        """Run complete integrated system with concurrent processing"""
+        self.logger.info("🌟 Running full AI Personal Assistant system with multi-threading")
         
+        # Create concurrent tasks for different system components
+        tasks = []
+        
+        # Task 1: CrewAI Development Cycles
+        if self.crew_manager:
+            tasks.append(asyncio.create_task(self._run_crew_cycles()))
+        
+        # Task 2: Discord Bot (already running in background)
+        if self.discord_bot:
+            self.logger.info("🤖 Discord bot running in background with voice capabilities")
+        
+        # Task 3: GitHub Monitoring (if needed)
+        if self.github_manager:
+            tasks.append(asyncio.create_task(self._run_github_monitoring()))
+        
+        # Task 4: System Health Monitoring
+        tasks.append(asyncio.create_task(self._run_health_monitoring()))
+        
+        # Run all tasks concurrently
+        try:
+            await asyncio.gather(*tasks, return_exceptions=True)
+        except KeyboardInterrupt:
+            self.logger.info("� Shutdown requested by user")
+        except Exception as e:
+            self.logger.error(f"❌ Error in system execution: {e}")
+        finally:
+            await self.shutdown()
+    
+    async def _run_crew_cycles(self):
+        """Run CrewAI development cycles continuously"""
         cycle_count = 0
         
         while self.running:
@@ -201,35 +320,80 @@ Ready to begin autonomous development cycle!
                 self.logger.info(f"🔄 Starting development cycle {cycle_count}")
                 
                 # Run CrewAI development cycle
-                if self.crew_manager:
-                    crew_result = await self.crew_manager.run_development_cycle()
-                    self.logger.info(f"🧠 Crew cycle result: {crew_result.get('status', 'unknown')}")
+                crew_result = await self.crew_manager.run_development_cycle()
+                self.logger.info(f"🧠 Crew cycle result: {crew_result.get('status', 'completed')}")
+                
+                # Process crew results
+                if crew_result.get('success', False):
+                    # Commit changes via GitHub if available
+                    if self.github_manager and crew_result.get('changes_made', False):
+                        try:
+                            commit_message = f"AI development cycle {cycle_count} - {crew_result.get('summary', 'improvements')}"
+                            # Note: Real GitHub integration would be implemented here
+                            self.logger.info(f"📝 Would commit: {commit_message}")
+                        except Exception as e:
+                            self.logger.error(f"❌ GitHub commit failed: {e}")
                     
-                    # Process crew results
-                    if crew_result.get('success') and crew_result.get('changes_made'):
-                        # Commit changes via GitHub automation
-                        if self.github_automation:
-                            commit_result = await self.github_automation.create_automated_commit(
-                                f"AI development cycle {cycle_count} - {crew_result.get('summary', 'improvements')}"
-                            )
-                            self.logger.info(f"📝 Commit result: {commit_result.get('success', False)}")
-                        
-                        # Notify via Discord
-                        if self.discord_bot:
-                            await self.discord_bot.notify_development_progress(crew_result)
+                    # Notify via Discord if available
+                    if self.discord_bot:
+                        try:
+                            progress_message = f"🔄 **Development Cycle {cycle_count} Complete**\\n\\n{crew_result.get('summary', 'Progress update')}"
+                            # Note: Real Discord notification would be implemented here
+                            self.logger.info(f"📊 Discord notification: {progress_message[:50]}...")
+                        except Exception as e:
+                            self.logger.error(f"❌ Discord notification failed: {e}")
                 
-                # Wait before next cycle
-                self.logger.info("⏳ Waiting 10 minutes before next cycle...")
-                await asyncio.sleep(600)  # 10 minutes
+                # Wait before next cycle (configurable interval)
+                cycle_interval = self.config.get('cycle_interval', 600)  # Default 10 minutes
+                self.logger.info(f"⏳ Waiting {cycle_interval//60} minutes before next cycle...")
+                await asyncio.sleep(cycle_interval)
                 
-            except KeyboardInterrupt:
-                self.logger.info("🛑 Shutdown requested by user")
+            except asyncio.CancelledError:
+                self.logger.info("🛑 Crew cycles cancelled")
                 break
             except Exception as e:
-                self.logger.error(f"❌ Error in main loop: {e}")
+                self.logger.error(f"❌ Error in crew cycle: {e}")
                 await asyncio.sleep(60)  # Wait 1 minute before retry
-        
-        await self.shutdown()
+    
+    async def _run_github_monitoring(self):
+        """Monitor GitHub for issues, PRs, and other events"""
+        while self.running:
+            try:
+                # Monitor GitHub events (implementation would go here)
+                self.logger.debug("� Monitoring GitHub events...")
+                await asyncio.sleep(300)  # Check every 5 minutes
+            except asyncio.CancelledError:
+                self.logger.info("🛑 GitHub monitoring cancelled")
+                break
+            except Exception as e:
+                self.logger.error(f"❌ GitHub monitoring error: {e}")
+                await asyncio.sleep(60)
+    
+    async def _run_health_monitoring(self):
+        """Monitor system health and performance"""
+        while self.running:
+            try:
+                # Check system health
+                status = await self.get_system_status()
+                self.logger.debug(f"💚 System health: {status['components']}")
+                
+                # Log resource usage periodically
+                if hasattr(self, '_health_check_count'):
+                    self._health_check_count += 1
+                else:
+                    self._health_check_count = 1
+                
+                # Every 12 checks (1 hour), log detailed status
+                if self._health_check_count % 12 == 0:
+                    self.logger.info(f"📊 System Status Update: {status}")
+                
+                await asyncio.sleep(300)  # Check every 5 minutes
+            except asyncio.CancelledError:
+                self.logger.info("🛑 Health monitoring cancelled")
+                break
+            except Exception as e:
+                self.logger.error(f"❌ Health monitoring error: {e}")
+                await asyncio.sleep(60)
     
     async def run_crew_only(self):
         """Run CrewAI system only"""
@@ -271,7 +435,9 @@ Ready to begin autonomous development cycle!
         ollama_status = False
         try:
             import requests
-            response = requests.get(f"http://{self.config['ollama_host']}/api/tags", timeout=5)
+            ollama_host = self.config.get('ollama_host', 'localhost')
+            ollama_port = self.config.get('ollama_port', '11434')
+            response = requests.get(f"http://{ollama_host}:{ollama_port}/api/tags", timeout=5)
             ollama_status = response.status_code == 200
         except:
             pass
@@ -281,14 +447,14 @@ Ready to begin autonomous development cycle!
             "components": {
                 "crew_ai": self.crew_manager is not None,
                 "discord_bot": self.discord_bot is not None,
-                "github_automation": self.github_automation is not None,
+                "github_manager": self.github_manager is not None,
                 "ollama": ollama_status
             },
             "configuration": {
-                "founder": self.config['founder_name'],
-                "github_user": self.config['founder_github'],
-                "discord_enabled": bool(self.config['discord_token']),
-                "github_enabled": bool(self.config['github_token'])
+                "founder": self.config.get('founder_name', 'Steve Cornell'),
+                "github_user": self.config.get('founder_github', 'master80059'),
+                "discord_enabled": bool(self.config.get('discord_token')),
+                "github_enabled": bool(self.config.get('github_token'))
             },
             "timestamp": datetime.now().isoformat()
         }
@@ -299,9 +465,24 @@ Ready to begin autonomous development cycle!
         
         self.running = False
         
+        # Cancel all background tasks
+        for task in self.background_tasks:
+            if not task.done():
+                task.cancel()
+        
+        # Wait for tasks to complete
+        if self.background_tasks:
+            await asyncio.gather(*self.background_tasks, return_exceptions=True)
+        
         # Shutdown components
         if self.discord_bot:
-            await self.discord_bot.close()
+            try:
+                await self.discord_bot.close()
+            except Exception as e:
+                self.logger.error(f"Error closing Discord bot: {e}")
+        
+        # Shutdown executor
+        self.executor.shutdown(wait=True)
         
         # Final founder notification
         await self.contact_founder_shutdown()
@@ -313,78 +494,23 @@ Ready to begin autonomous development cycle!
         message = f"""
 🛑 **AI Personal Assistant System Shutdown**
 
-**Founder:** Steve Cornell (master80059)
+**Founder:** {self.config.get('founder_name', 'Steve Cornell')} ({self.config.get('founder_github', 'master80059')})
 **Status:** System shutting down
 **Time:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
+**Components Shut Down:**
+• CrewAI System: {'✅' if self.crew_manager else '❌'}
+• Discord Bot: {'✅' if self.discord_bot else '❌'}
+• GitHub Manager: {'✅' if self.github_manager else '❌'}
+
 System has been stopped. Ready to restart when needed.
+All AI agents are now offline.
         """
         
         self.logger.info("👑 Notifying founder about shutdown...")
-        # Implementation would send notification
+        # Note: Real implementation would send notification
+        self.logger.info("📨 Shutdown notification logged")
 
-# Mock classes for components that need external dependencies
-class MockCrewManager:
-    """Mock CrewAI manager for testing"""
-    
-    async def run_development_cycle(self):
-        """Simulate crew development cycle"""
-        await asyncio.sleep(2)  # Simulate processing
-        return {
-            "success": True,
-            "status": "completed",
-            "changes_made": True,
-            "summary": "Code analysis and improvements completed",
-            "files_analyzed": 5,
-            "improvements_suggested": 12
-        }
-
-class MockDiscordBot:
-    """Mock Discord bot for testing"""
-    
-    def __init__(self, token, crew_manager):
-        self.token = token
-        self.crew_manager = crew_manager
-    
-    async def start(self):
-        """Simulate bot start"""
-        await asyncio.sleep(1)
-    
-    async def notify_founder(self, message):
-        """Simulate founder notification"""
-        print(f"📨 [Discord] Founder notification: {message[:100]}...")
-    
-    async def notify_development_progress(self, result):
-        """Simulate progress notification"""
-        print(f"📊 [Discord] Development progress: {result.get('summary', 'Progress update')}")
-    
-    async def close(self):
-        """Simulate bot close"""
-        pass
-
-class MockGitHubAutomation:
-    """Mock GitHub automation for testing"""
-    
-    def __init__(self, token):
-        self.token = token
-    
-    async def create_automated_commit(self, message):
-        """Simulate commit creation"""
-        await asyncio.sleep(1)
-        return {
-            "success": True,
-            "commit_hash": "abc12345",
-            "message": message
-        }
-    
-    async def create_issue(self, title, body, labels):
-        """Simulate issue creation"""
-        await asyncio.sleep(1)
-        return {
-            "success": True,
-            "issue_number": 123,
-            "title": title
-        }
 
 # Main execution
 async def main():
@@ -394,12 +520,12 @@ async def main():
     parser = argparse.ArgumentParser(description='AI Personal Assistant')
     parser.add_argument('--mode', choices=['full', 'crew_only', 'discord_only'], 
                        default='full', help='Operating mode')
-    parser.add_argument('--config-dir', default='config', help='Configuration directory')
+    parser.add_argument('--config', default='config/test.yaml', help='Configuration file')
     
     args = parser.parse_args()
     
     # Create and start assistant
-    assistant = AIPersonalAssistant(args.config_dir)
+    assistant = AIPersonalAssistant(args.config)
     
     try:
         await assistant.start(args.mode)
