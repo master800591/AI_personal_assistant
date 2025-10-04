@@ -1,0 +1,189 @@
+# AI Personal Assistant - CrewAI Tasks Configuration with Discord and Knowledge Tools
+# Founder: Steve Cornell (master80059)
+
+communicate_with_founder:
+  description: >
+    Contact founder Steve Cornell (master80059) via comprehensive Discord communications to:
+    1. Report current development status and progress through voice and text channels
+    2. Ask specific questions about project direction and priorities using Discord voice calls
+    3. Request approval for major changes or new features via dedicated Discord channels
+    4. Share analysis results and get feedback through multi-modal Discord communications
+    5. Maintain detailed knowledge base documentation of all founder interactions
+    
+    Current focus areas for discussion:
+    - CrewAI integration progress and multi-agent coordination
+    - Discord bot functionality with voice channel capabilities
+    - GitHub automation and development workflow
+    - Code improvement suggestions and implementation priorities
+    - Knowledge management system development and usage
+  expected_output: >
+    A comprehensive communication report including:
+    - Summary of topics discussed with founder via Discord
+    - Founder's responses and guidance received through voice/text
+    - Action items and priorities identified through Discord channels
+    - Next steps approved by founder with Discord confirmation
+    - Knowledge base entries created for all founder communications
+    - Discord server properly configured for ongoing communications
+  agent: founder_communication_agent
+
+analyze_current_codebase:
+  description: >
+    Perform comprehensive analysis of the AI Personal Assistant codebase with Discord notifications:
+    1. Review all Python files in src/ai_assistant/ directory with real-time Discord updates
+    2. Identify code quality issues, security vulnerabilities, and performance problems
+    3. Check for proper error handling, logging, and documentation
+    4. Evaluate current CrewAI integration and suggest improvements
+    5. Assess Discord bot implementation and voice channel functionality
+    6. Review GitHub integration and automation capabilities
+    7. Create detailed knowledge base entries for all findings
+    8. Send analysis progress updates through Discord channels
+    
+    Focus on files: {target_files}
+    Current date: 2025-10-03
+  expected_output: >
+    Comprehensive analysis report with Discord integration:
+    - Code quality score (1-10) for each module with Discord notifications
+    - List of specific issues found with line numbers sent to Discord channels
+    - Security assessment and recommendations documented in knowledge base
+    - Performance optimization opportunities communicated via Discord voice
+    - Recommended refactoring and improvements with Discord team notifications
+    - Priority ranking for fixes (Critical/High/Medium/Low) shared in Discord
+    - Knowledge base fully updated with analysis results
+  agent: code_analysis_agent
+
+implement_crewai_system:
+  description: >
+    Create a fully functional CrewAI multi-agent system:
+    1. Implement proper crew configuration with agents.yaml and tasks.yaml
+    2. Create agent classes with specialized tools and capabilities
+    3. Set up task dependencies and workflow orchestration
+    4. Integrate with local Ollama models for AI processing
+    5. Add proper error handling and logging for crew operations
+    6. Create crew monitoring and status reporting
+    
+    Ensure the crew can actually:
+    - Execute tasks autonomously
+    - Communicate between agents
+    - Generate real code improvements
+    - Report progress and results
+  expected_output: >
+    Working CrewAI implementation including:
+    - Functional crew classes and agent definitions
+    - Task execution workflow with dependencies
+    - Integration with Ollama local models
+    - Error handling and recovery mechanisms
+    - Status monitoring and reporting system
+    - Documentation and usage examples
+  agent: feature_development_agent
+  context: [analyze_current_codebase]
+
+setup_discord_bot:
+  description: >
+    Create a fully functional Discord bot for the AI Personal Assistant:
+    1. Implement Discord.py bot with proper authentication
+    2. Create commands for interacting with the AI system
+    3. Set up real-time notifications for development activities
+    4. Add founder communication features (@master80059)
+    5. Implement status monitoring and reporting
+    6. Create interactive features for crew management
+    
+    Required commands:
+    - !ai status - Show system status
+    - !ai analyze [file] - Trigger code analysis
+    - !ai crew status - Show crew status
+    - !ai ask [question] - Ask the founder a question
+    - !ai deploy - Deploy changes to GitHub
+  expected_output: >
+    Complete Discord bot implementation with:
+    - Bot authentication and connection handling
+    - Command system with error handling
+    - Real-time notification system
+    - Founder communication features
+    - Interactive crew management interface
+    - Comprehensive logging and monitoring
+  agent: discord_integration_agent
+  context: [implement_crewai_system]
+
+automate_github_workflow:
+  description: >
+    Set up complete GitHub automation and development workflow:
+    1. Implement automated commit and push functionality
+    2. Create branch management for features and fixes
+    3. Set up pull request automation with proper templates
+    4. Implement issue tracking and management
+    5. Create CI/CD pipeline with GitHub Actions
+    6. Set up automated testing and quality checks
+    
+    Workflow requirements:
+    - Automatic commits for AI-generated improvements
+    - Feature branch creation and management
+    - Pull request templates with change descriptions
+    - Issue creation for identified problems
+    - Automated testing on commits
+    - Deployment pipeline for production
+  expected_output: >
+    Complete GitHub automation system including:
+    - Repository management classes and methods
+    - Automated commit and branch workflows
+    - Pull request and issue management
+    - GitHub Actions CI/CD pipeline
+    - Testing and quality assurance automation
+    - Documentation and configuration files
+  agent: github_automation_agent
+  context: [setup_discord_bot]
+
+create_comprehensive_tests:
+  description: >
+    Develop comprehensive test suite for the AI Personal Assistant:
+    1. Create unit tests for all core functionality
+    2. Implement integration tests for crew operations
+    3. Add Discord bot testing with mock interactions
+    4. Create GitHub automation tests
+    5. Set up continuous testing with pytest
+    6. Add code coverage reporting and quality metrics
+    
+    Test areas:
+    - CrewAI agent and task functionality
+    - Discord bot commands and responses
+    - GitHub integration and automation
+    - Ollama model integration
+    - Error handling and recovery
+    - Configuration management
+  expected_output: >
+    Complete test suite including:
+    - Unit tests with >90% code coverage
+    - Integration tests for all major workflows
+    - Mock tests for external dependencies
+    - Performance and load testing
+    - Test automation and CI integration
+    - Quality metrics and reporting
+  agent: testing_agent
+  context: [automate_github_workflow]
+
+deploy_production_system:
+  description: >
+    Deploy the complete AI Personal Assistant system to production:
+    1. Validate all components are working correctly
+    2. Deploy to GitHub with proper versioning
+    3. Set up production configuration and secrets
+    4. Enable monitoring and alerting systems
+    5. Create deployment documentation
+    6. Notify founder of successful deployment
+    
+    Production requirements:
+    - All tests passing
+    - Discord bot operational
+    - CrewAI system functional
+    - GitHub automation active
+    - Monitoring and logging enabled
+    - Documentation complete
+  expected_output: >
+    Production deployment report including:
+    - Deployment status and verification
+    - System health and monitoring setup
+    - Configuration and security validation
+    - User documentation and guides
+    - Troubleshooting and maintenance procedures
+    - Success notification to founder
+  agent: github_automation_agent
+  context: [create_comprehensive_tests]

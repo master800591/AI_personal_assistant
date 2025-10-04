@@ -1,0 +1,187 @@
+{
+  "timestamp": "2025-10-03T18:20:12.988632",
+  "tests": {
+    "crew_ai_init": {
+      "passed": 5,
+      "failed": 0,
+      "details": [
+        {
+          "test": "crew_manager_creation",
+          "status": "PASS"
+        },
+        {
+          "test": "agent_code_analyst_init",
+          "status": "PASS"
+        },
+        {
+          "test": "agent_feature_developer_init",
+          "status": "PASS"
+        },
+        {
+          "test": "agent_founder_communicator_init",
+          "status": "PASS"
+        },
+        {
+          "test": "crew_creation",
+          "status": "PASS"
+        }
+      ]
+    },
+    "discord_tools": {
+      "passed": 6,
+      "failed": 0,
+      "details": [
+        {
+          "test": "DiscordChannelManagerTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "DiscordVoiceChannelTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "DiscordMessageTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "DiscordListenerTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "DiscordSpeakerTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "DiscordGuildManagerTool_instantiation",
+          "status": "PASS"
+        }
+      ]
+    },
+    "knowledge_system": {
+      "passed": 5,
+      "failed": 0,
+      "details": [
+        {
+          "test": "knowledge_manager_creation",
+          "status": "PASS"
+        },
+        {
+          "test": "KnowledgeQueryTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "KnowledgeAddTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "KnowledgeUpdateTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "DocumentProcessorTool_instantiation",
+          "status": "PASS"
+        }
+      ]
+    },
+    "ai_dev_tools": {
+      "passed": 5,
+      "failed": 0,
+      "details": [
+        {
+          "test": "CodeAnalysisTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "FeatureImplementationTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "GitHubIntegrationTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "FileSystemTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "OllamaIntegrationTool_instantiation",
+          "status": "PASS"
+        }
+      ]
+    },
+    "integration": {
+      "passed": 3,
+      "failed": 0,
+      "details": [
+        {
+          "test": "discord_crewai_integration",
+          "status": "PASS"
+        },
+        {
+          "test": "event_handling",
+          "status": "PASS"
+        },
+        {
+          "test": "tool_integration",
+          "status": "PASS"
+        }
+      ]
+    },
+    "performance": {
+      "passed": 2,
+      "failed": 0,
+      "details": [
+        {
+          "test": "tool_instantiation_performance",
+          "status": "PASS"
+        },
+        {
+          "test": "memory_efficiency",
+          "status": "PASS"
+        }
+      ],
+      "metrics": {
+        "tool_instantiation_time": 0.003512,
+        "total_tools_created": 16
+      }
+    }
+  },
+  "summary": {
+    "total_tests": 26,
+    "total_passed": 26,
+    "total_failed": 0,
+    "success_rate": 100.0,
+    "categories": {
+      "crew_ai_init": {
+        "passed": 5,
+        "failed": 0,
+        "success_rate": 100.0
+      },
+      "discord_tools": {
+        "passed": 6,
+        "failed": 0,
+        "success_rate": 100.0
+      },
+      "knowledge_system": {
+        "passed": 5,
+        "failed": 0,
+        "success_rate": 100.0
+      },
+      "ai_dev_tools": {
+        "passed": 5,
+        "failed": 0,
+        "success_rate": 100.0
+      },
+      "integration": {
+        "passed": 3,
+        "failed": 0,
+        "success_rate": 100.0
+      },
+      "performance": {
+        "passed": 2,
+        "failed": 0,
+        "success_rate": 100.0
+      }
+    }
+  }
+}

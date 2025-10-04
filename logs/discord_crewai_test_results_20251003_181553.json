@@ -1,0 +1,175 @@
+{
+  "timestamp": "2025-10-03T18:15:53.498466",
+  "tests": {
+    "crew_ai_init": {
+      "passed": 5,
+      "failed": 0,
+      "details": [
+        {
+          "test": "crew_manager_creation",
+          "status": "PASS"
+        },
+        {
+          "test": "agent_code_analyst_init",
+          "status": "PASS"
+        },
+        {
+          "test": "agent_feature_developer_init",
+          "status": "PASS"
+        },
+        {
+          "test": "agent_founder_communicator_init",
+          "status": "PASS"
+        },
+        {
+          "test": "crew_creation",
+          "status": "PASS"
+        }
+      ]
+    },
+    "discord_tools": {
+      "passed": 5,
+      "failed": 1,
+      "details": [
+        {
+          "test": "DiscordChannelManagerTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "DiscordVoiceChannelTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "DiscordMessageTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "DiscordListenerTool_instantiation",
+          "status": "FAIL",
+          "error": "\"DiscordListenerTool\" object has no field \"listening\""
+        },
+        {
+          "test": "DiscordSpeakerTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "DiscordGuildManagerTool_instantiation",
+          "status": "PASS"
+        }
+      ]
+    },
+    "knowledge_system": {
+      "passed": 5,
+      "failed": 0,
+      "details": [
+        {
+          "test": "knowledge_manager_creation",
+          "status": "PASS"
+        },
+        {
+          "test": "KnowledgeQueryTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "KnowledgeAddTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "KnowledgeUpdateTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "DocumentProcessorTool_instantiation",
+          "status": "PASS"
+        }
+      ]
+    },
+    "ai_dev_tools": {
+      "passed": 5,
+      "failed": 0,
+      "details": [
+        {
+          "test": "CodeAnalysisTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "FeatureImplementationTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "GitHubIntegrationTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "FileSystemTool_instantiation",
+          "status": "PASS"
+        },
+        {
+          "test": "OllamaIntegrationTool_instantiation",
+          "status": "PASS"
+        }
+      ]
+    },
+    "integration": {
+      "passed": 0,
+      "failed": 1,
+      "details": [
+        {
+          "test": "system_integration",
+          "status": "FAIL",
+          "error": "\"DiscordListenerTool\" object has no field \"listening\""
+        }
+      ]
+    },
+    "performance": {
+      "passed": 0,
+      "failed": 1,
+      "details": [
+        {
+          "test": "performance",
+          "status": "FAIL",
+          "error": "\"DiscordListenerTool\" object has no field \"listening\""
+        }
+      ],
+      "metrics": {}
+    }
+  },
+  "summary": {
+    "total_tests": 23,
+    "total_passed": 20,
+    "total_failed": 3,
+    "success_rate": 86.95652173913044,
+    "categories": {
+      "crew_ai_init": {
+        "passed": 5,
+        "failed": 0,
+        "success_rate": 100.0
+      },
+      "discord_tools": {
+        "passed": 5,
+        "failed": 1,
+        "success_rate": 83.33333333333334
+      },
+      "knowledge_system": {
+        "passed": 5,
+        "failed": 0,
+        "success_rate": 100.0
+      },
+      "ai_dev_tools": {
+        "passed": 5,
+        "failed": 0,
+        "success_rate": 100.0
+      },
+      "integration": {
+        "passed": 0,
+        "failed": 1,
+        "success_rate": 0.0
+      },
+      "performance": {
+        "passed": 0,
+        "failed": 1,
+        "success_rate": 0.0
+      }
+    }
+  }
+}
